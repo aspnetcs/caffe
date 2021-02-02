@@ -1,0 +1,75 @@
+https://blog.csdn.net/stickmangod/article/details/85316142
+E: Sub-process /usr/bin/dpkg returned an error code (1)解决办法
+
+Mr.Stick 2018-12-28 00:08:55  81977  收藏 142
+分类专栏： ubuntu日常 文章标签： ubuntu
+版权
+E: Sub-process /usr/bin/dpkg returned an error code (1)解决办法
+安装libapache2-svn出现了这个错误，是由于apt－get安装软件时出现了类似于：
+
+dpkg: error processing package libapache2-mod-svn (--configure):
+ subprocess installed post-installation script returned error exit status 1
+No apport report written because the error message indicates its a followup error from a previous failure.
+                                                                                                          dpkg: dependency problems prevent configuration of libapache2-svn:
+ libapache2-svn depends on libapache2-mod-svn; however:
+  Package libapache2-mod-svn is not configured yet.
+
+dpkg: error processing package libapache2-svn (--configure):
+ dependency problems - leaving unconfigured
+Errors were encountered while processing:
+ libapache2-mod-svn
+ libapache2-svn
+E: Sub-process /usr/bin/dpkg returned an error code (1)
+1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+解决方法：
+现将info文件夹更名
+
+sudo mv /var/lib/dpkg/info /var/lib/dpkg/info.bk
+1
+新建一个新的info文件夹
+
+sudo mkdir /var/lib/dpkg/info
+1
+安装修复
+
+sudo apt-get update
+$sudoapt-get install -f 
+1
+2
+执行完上一步操作后，在info文件夹下生成一些文件，现将这些文件全部移到info.bk文件夹下
+
+sudo mv /var/lib/dpkg/info/* /var/lib/dpkg/info.bk
+1
+把自己新建的info文件夹删掉
+
+sudo rm -rf /var/lib/dpkg/info
+1
+恢复原有info文件夹，修改名字
+
+sudo mv /var/lib/dpkg/info.bk /var/lib/dpkg/info
+1
+到这里已经成功安装了，但我还遇到了相关文件的缺失，例如
+
+/etc/apache2/mods-available/dav_svn.conf
+
+但是现在至少能够正常安装了，直接索性卸载重装
+
+sudo apt-get --purge remove libapache2-mod-svn 
+sudo apt-get --purge remove libapache2-svn 
+sudo apt-get autoremove
+1
+2
+3
+再install一边，恢复正常
